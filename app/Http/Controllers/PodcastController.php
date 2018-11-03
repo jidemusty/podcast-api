@@ -3,20 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\Podcast;
+use App\Http\Resources\PodcastResource;
 
 class PodcastController extends Controller
 {
     public function index()
     {
-        $podcasts = Podcast::get();
+        $podcasts = Podcast::latest()->paginate(2);
 
-        return $podcasts;
+        return PodcastResource::collection($podcasts);
     }
 
     public function show($id)
     {
         $podcast = Podcast::find($id);
 
-        return $podcast;
+        if ($podcast === null) {
+            return response(null, 404);
+        }
+
+        return new PodcastResource($podcast);
     }
 }
